@@ -15,9 +15,10 @@ MAP_LEVEL = [
 class Wall(arcade.Sprite):
     def __init__(self):
         super().__init__()
-        self.texture = arcade.make_rectangle_texture(TILE_SIZE, TILE_SIZE, arcade.color.BLUE)
+        self.texture = arcade.make_soft_square_texture(TILE_SIZE, arcade.color.BLUE)
         self.width = TILE_SIZE
         self.height = TILE_SIZE
+
 
 class Coin(arcade.Sprite):
     def __init__(self):
@@ -95,8 +96,7 @@ class PacmanGame(arcade.View):
 
 
     def on_draw(self):
-        arcade.start_render()
-
+        self.clear()
         self.wall_list.draw()
         self.coin_list.draw()
         self.ghost_list.draw()
@@ -108,4 +108,11 @@ class PacmanGame(arcade.View):
             arcade.draw_text("Game Over", SCREEN_WIDTH/2, SCREEN_HEIGHT/2, arcade.color.RED, 40)
 
 def main():
-    window= arcade.Window
+    window= arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
+    game= PacmanGame()
+    window.show_view(game)
+    game.setup()
+    arcade.run()
+
+if __name__ == "__main__":
+    main()
