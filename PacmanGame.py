@@ -6,41 +6,69 @@ SCREEN_HEIGHT= 600
 SCREEN_TITLE= "My First Pacman Game"
 TILE_SIZE= 32
 MAP_LEVEL = [
-    "###########",
-    "#PCCCCGCCC#",
-    "#CCCCCCCCC#",
-    "###########"
+"#########################",
+"#PCCCCCCCCCC##CCCCCCCCCC#",
+"#C####C#####C##C#####C###",
+"#C####C#####C##C#####C###",
+"#CCCCCCCCCCCCCCCCCCCCCCC#",
+"#C####C##C########C##C###",
+"#CCCCCC##CCCC##CCCC##CCC#",
+"######C#####C##C#####C###",
+"#CCCCCCCC##CCCC##CCCCCCC#",
+"#C#######C#G##C#C#########",
+"#CCCCCCCC##CCCC##CCCCCCC#",
+"######C#####C##C#####C###",
+"#CCCCCC##CCCC##CCCC##CCC#",
+"#C####C##C########C##C###",
+"#CCCCCCCCCCCCCCCCCCCCCCC#",
+"#C####C#####C##C#####C###",
+"#CCCC##CCCCCCCCCCCC##CCC#",
+"#########################"
 ]
 
+
+
+
 class Wall(arcade.Sprite):
-    def __init__(self):
+    def __init__(self,x,y):
         super().__init__()
         self.texture = arcade.make_soft_square_texture(TILE_SIZE, arcade.color.BLUE)
         self.width = TILE_SIZE
-        self.height = TILE_SIZE#11
+        self.height = TILE_SIZE
+        self.center_x=x
+        self.center_y=y
 
 
 class Coin(arcade.Sprite):
-    def __init__(self):
+    def __init__(self,x,y):
         super().__init__()
         size = TILE_SIZE // 2
         self.texture = arcade.make_circle_texture(size, arcade.color.YELLOW)
         self.width = size
         self.height = size
+        self.center_x=x
+        self.center_y=y
+
 
 class Ghost(arcade.Sprite):
-    def __init__(self):
+    def __init__(self,x,y):
         super().__init__()
         self.texture = arcade.make_circle_texture(TILE_SIZE, arcade.color.RED)
         self.width = TILE_SIZE
         self.height = TILE_SIZE
+        self.center_x=x
+        self.center_y=y
+
 
 class Pacman(arcade.Sprite):
-    def __init__(self):
+    def __init__(self,x,y):
         super().__init__()
         self.texture = arcade.make_circle_texture(TILE_SIZE, arcade.color.YELLOW)
         self.width = TILE_SIZE
         self.height = TILE_SIZE
+        self.center_x=x
+        self.center_y=y
+
 
 class PacmanGame(arcade.View):
 
@@ -71,25 +99,21 @@ class PacmanGame(arcade.View):
             for col_idx, cell in enumerate(row):
                 x = col_idx * TILE_SIZE + TILE_SIZE / 2
                 y = (rows - row_idx - 1) * TILE_SIZE + TILE_SIZE / 2
+
                 if cell== "#":
-                    wall= Wall()
-                    wall.center_x= x
-                    wall.center_y= y
+                    wall= Wall(x,y)
                     self.wall_list.append(wall)
+
                 elif cell== "C":
-                    coin= Coin()
-                    coin.center_x= x
-                    coin.center_y= y
+                    coin= Coin(x,y)
                     self.coin_list.append(coin)
+
                 elif cell== "G":
-                    ghost= Ghost()
-                    ghost.center_x= x
-                    ghost.center_y= y
+                    ghost= Ghost(x,y)
                     self.ghost_list.append(ghost)
+
                 elif cell== "P":
-                    self.player= Pacman()
-                    self.player.center_x= x
-                    self.player.center_y= y
+                    self.player= Pacman(x,y)
                     self.player_list.append(self.player)
                     self.start_x= x
                     self.start_y= y
@@ -106,6 +130,7 @@ class PacmanGame(arcade.View):
 
         if self.game_over:
             arcade.draw_text("Game Over", SCREEN_WIDTH/2, SCREEN_HEIGHT/2, arcade.color.RED, 40)
+
 
 def main():
     window= arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
