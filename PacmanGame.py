@@ -17,7 +17,7 @@ class Wall(arcade.Sprite):
         super().__init__()
         self.texture = arcade.make_soft_square_texture(TILE_SIZE, arcade.color.BLUE)
         self.width = TILE_SIZE
-        self.height = TILE_SIZE
+        self.height = TILE_SIZE#11
 
 
 class Coin(arcade.Sprite):
