@@ -15,7 +15,7 @@ MAP_LEVEL = [
 "#CCCCCC##CCCC##CCCC##CCC#",
 "######C#####C##C#####C###",
 "#CCCCCCCC##CCCC##CCCCCCC#",
-"#C#######C#G##C#C#########",
+"#C######CC#G##C#CC########",
 "#CCCCCCCC##CCCC##CCCCCCC#",
 "######C#####C##C#####C###",
 "#CCCCCC##CCCC##CCCC##CCC#",
@@ -42,7 +42,7 @@ class Wall(arcade.Sprite):
 class Coin(arcade.Sprite):
     def __init__(self,x,y):
         super().__init__()
-        size = TILE_SIZE // 2
+        size = TILE_SIZE // 4
         self.texture = arcade.make_circle_texture(size, arcade.color.YELLOW)
         self.width = size
         self.height = size
@@ -51,9 +51,9 @@ class Coin(arcade.Sprite):
 
 
 class Ghost(arcade.Sprite):
-    def __init__(self,x,y):
+    def __init__(self,x,y,texture):
         super().__init__()
-        self.texture = arcade.make_circle_texture(TILE_SIZE, arcade.color.RED)
+        self.texture= texture
         self.width = TILE_SIZE
         self.height = TILE_SIZE
         self.center_x=x
@@ -61,13 +61,23 @@ class Ghost(arcade.Sprite):
 
 
 class Pacman(arcade.Sprite):
-    def __init__(self,x,y):
+    def __init__(self,x,y,textures):
         super().__init__()
-        self.texture = arcade.make_circle_texture(TILE_SIZE, arcade.color.YELLOW)
+        self.textures= textures
+        self.texture= self.textures[0]
         self.width = TILE_SIZE
         self.height = TILE_SIZE
         self.center_x=x
         self.center_y=y
+        self.anim_time= 0
+        self.frame= 0
+
+    def update_animation(self,delta_time= 1/60):
+        self.anim_time+= delta_time
+        if self.anim_time >= 0.15:
+            self.anim_time= 0
+            self.frame= (self.frame + 1) % 2
+            self.texture= self.textures[self.frame]
 
 
 class PacmanGame(arcade.View):
@@ -87,12 +97,13 @@ class PacmanGame(arcade.View):
         self.score= 0
         self.lives= 3
 
+    def load_textures(self):
+        self.textures= [arcade.load_texture("assets/pacmanclose.jpeg"),
+        arcade.load_texture("assets/pacmanopen.jpeg")]
+        self.ghost_texture= arcade.load_texture("assets/redghost.png")
+
     def setup(self):
-        self.wall_list = arcade.SpriteList()
-        self.coin_list = arcade.SpriteList()
-        self.ghost_list = arcade.SpriteList()
-        self.player_list = arcade.SpriteList()
-        self.game_over = False
+        self.load_textures()
         rows= len(MAP_LEVEL)
 
         for row_idx, row in enumerate(MAP_LEVEL):
@@ -109,11 +120,11 @@ class PacmanGame(arcade.View):
                     self.coin_list.append(coin)
 
                 elif cell== "G":
-                    ghost= Ghost(x,y)
+                    ghost= Ghost(x,y,self.ghost_texture)
                     self.ghost_list.append(ghost)
 
                 elif cell== "P":
-                    self.player= Pacman(x,y)
+                    self.player= Pacman(x,y,self.textures)
                     self.player_list.append(self.player)
                     self.start_x= x
                     self.start_y= y
@@ -128,8 +139,8 @@ class PacmanGame(arcade.View):
         arcade.draw_text(f"Score: {self.score}", 10, SCREEN_HEIGHT -30, arcade.color.WHITE, 16)
         arcade.draw_text(f"Lives: {self.lives}", 10, SCREEN_HEIGHT -55, arcade.color.WHITE, 16)
 
-        if self.game_over:
-            arcade.draw_text("Game Over", SCREEN_WIDTH/2, SCREEN_HEIGHT/2, arcade.color.RED, 40)
+    def on_update(self,delta_time):
+        self.player_list.update_animation(delta_time)
 
 
 def main():
