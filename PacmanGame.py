@@ -98,8 +98,8 @@ class PacmanGame(arcade.View):
         self.lives= 3
 
     def load_textures(self):
-        self.textures= [arcade.load_texture("assets/pacmanclose.jpeg"),
-        arcade.load_texture("assets/pacmanopen.jpeg")]
+        self.textures= [arcade.load_texture("assets/pacmanclose-removebg-preview.png"),
+        arcade.load_texture("assets/pacmanopen-removebg-preview.png")]
         self.ghost_texture= arcade.load_texture("assets/redghost.png")
 
     def setup(self):
