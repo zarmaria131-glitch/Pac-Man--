@@ -140,6 +140,32 @@ class PacmanGame(arcade.View):
         arcade.draw_text(f"Lives: {self.lives}", 10, SCREEN_HEIGHT -55, arcade.color.WHITE, 16)
 
     def on_update(self,delta_time):
+        if self.player:
+            old_x = self.player.center_x
+            old_y = self.player.center_y
+
+            self.player.center_x += self.player.change_x
+            self.player.center_y += self.player.change_y
+
+            hit_list= arcade.check_for_collision_with_list(self.player, self.wall_list)
+
+            if hit_list:
+                self.player.center_x = old_x
+                self.player.center_y = old_y
+
+        for ghost in self.ghost_list:
+            old_x = ghost.center_x
+            old_y = ghost.center_y
+
+            ghost.center_x += ghost.change_x
+            ghost.center_y += ghost.change_y
+
+            hit_list= arcade.check_for_collision_with_list(ghost, self.wall_list)
+
+            if hit_list:
+                ghost.center_x = old_x
+                ghost.center_y = old_y
+
         self.player_list.update_animation(delta_time)
 
 
