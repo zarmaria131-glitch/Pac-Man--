@@ -1,4 +1,5 @@
 import arcade
+import random
 
 #קבועים
 SCREEN_WIDTH= 800
@@ -96,6 +97,50 @@ class PacmanGame(arcade.View):
         self.start_y= 0
         self.score= 0
         self.lives= 3
+        self.player_speed= 3
+        self.ghost_speed= 2
+        self.current_direction = (self.player_speed, 0)
+        self.next_direction = (self.player_speed, 0)
+
+    def on_key_press(self, key, modifiers):
+        if key== arcade.key.UP:
+            self.next_direction = (0, self.player_speed)
+
+        elif key == arcade.key.DOWN:
+            self.next_direction = (0, -self.player_speed)
+
+        elif key == arcade.key.LEFT:
+            self.next_direction = (-self.player_speed, 0)
+
+        elif key == arcade.key.RIGHT:
+            self.next_direction = (self.player_speed, 0)
+
+    def move_ghost_random(self, ghost):
+        directions = [
+            (self.ghost_speed, 0),
+            (-self.ghost_speed, 0),
+            (0, self.ghost_speed),
+            (0, -self.ghost_speed)
+        ]
+
+        random.shuffle(directions)
+
+        for dx, dy in directions:
+            old_x = ghost.center_x
+            old_y = ghost.center_y
+
+            ghost.center_x += dx
+            ghost.center_y += dy
+
+            hit_list = arcade.check_for_collision_with_list(ghost, self.wall_list)
+
+            if not hit_list:
+                ghost.change_x = dx
+                ghost.change_y = dy
+                return
+
+            ghost.center_x = old_x
+            ghost.center_y = old_y
 
     def load_textures(self):
         self.textures= [arcade.load_texture("assets/pacmanclose-removebg-preview.png"),
@@ -129,6 +174,8 @@ class PacmanGame(arcade.View):
                     self.start_x= x
                     self.start_y= y
 
+        for ghost in self.ghost_list:
+            self.move_ghost_random(ghost)
 
     def on_draw(self):
         self.clear()
@@ -141,19 +188,39 @@ class PacmanGame(arcade.View):
 
     def on_update(self,delta_time):
         if self.player:
+            dx, dy = self.next_direction
+
             old_x = self.player.center_x
             old_y = self.player.center_y
 
-            self.player.center_x += self.player.change_x
-            self.player.center_y += self.player.change_y
+            self.player.center_x += dx
+            self.player.center_y += dy
 
-            hit_list= arcade.check_for_collision_with_list(self.player, self.wall_list)
+            hit_list = arcade.check_for_collision_with_list(self.player, self.wall_list)
+
+            if not hit_list:
+                self.current_direction = self.next_direction
+
+            self.player.center_x = old_x
+            self.player.center_y = old_y
+
+
+            dx, dy = self.current_direction
+
+            self.player.center_x += dx
+            self.player.center_y += dy
+
+            hit_list = arcade.check_for_collision_with_list(self.player, self.wall_list)
 
             if hit_list:
                 self.player.center_x = old_x
                 self.player.center_y = old_y
+                self.current_direction = (0, 0)
 
         for ghost in self.ghost_list:
+            if arcade.check_for_collision_with_list(ghost, self.wall_list):
+                self.move_ghost_random(ghost)
+
             old_x = ghost.center_x
             old_y = ghost.center_y
 
